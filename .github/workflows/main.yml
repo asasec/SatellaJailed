@@ -31,7 +31,8 @@ jobs:
           else
             sudo git -C /opt/theos/sdks pull
           fi
-          sudo chown -R $USER:staff /opt/theos
+          # chown komutunun eksik/geçici kilit dosyaları yüzünden hata vermesini önlüyoruz
+          sudo chown -R $USER:staff /opt/theos || true
 
       - name: Install Dependencies
         run: |
@@ -46,10 +47,6 @@ jobs:
           mkdir -p "$TARGET_JINX_DIR"
           rm -rf "$TEMP_JINX"
           
-          # Git credential prompt'unu engellemek ve public clonelamayı garantiye almak için global ayar
-          git config --global url."https://github.com/".insteadOf git@github.com:
-          
-          # Depoyu zip arşivi olarak doğrudan indirmek terminal kimlik doğrulama sorunlarını tamamen ortadan kaldırır
           curl -L https://github.com/checkra1n/Jinx/archive/refs/heads/main.zip -o /tmp/jinx.zip
           unzip -q /tmp/jinx.zip -d /tmp/
           mv /tmp/Jinx-main "$TEMP_JINX"
