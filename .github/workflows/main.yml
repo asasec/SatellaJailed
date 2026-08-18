@@ -23,11 +23,17 @@ jobs:
 
       - name: Set up Theos and SDKs
         run: |
-          # Install Theos
-          sudo git clone --recursive https://github.com/theos/theos.git /opt/theos
+          # Install Theos if not already present
+          if [ ! -d "/opt/theos" ]; then
+            sudo git clone --recursive https://github.com/theos/theos.git /opt/theos
+          fi
           
-          # Clone official Theos SDKs repository
-          sudo git clone https://github.com/theos/sdks.git /opt/theos/sdks
+          # Clone official Theos SDKs repository safely
+          if [ ! -d "/opt/theos/sdks" ]; then
+            sudo git clone https://github.com/theos/sdks.git /opt/theos/sdks
+          else
+            sudo git -C /opt/theos/sdks pull
+          fi
           
           # Fix permissions for runner user
           sudo chown -R $USER:staff /opt/theos
@@ -44,8 +50,6 @@ jobs:
       - name: Prepare Artifact
         run: |
           mkdir -p ./output
-          # Makefiles without package rules usually output the dylib directly in .theos/obj/ or similar, 
-          # or we can grab it from the build output directory inside Tweak/.theos
           find ./Tweak -name "*.dylib" -exec cp {} ./output/ \;
 
       - name: Upload Artifact
