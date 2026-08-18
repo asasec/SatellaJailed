@@ -18,7 +18,7 @@ INSTALL_TARGET_PROCESSES = SpringBoard
 
 # Define included files, imported frameworks, etc.
 
-LIBRARY_NAME = BedavaİapAsasec
+LIBRARY_NAME = SatellaJailed
 $(LIBRARY_NAME)_FILES = Sources/load.s $(shell find Sources/$(LIBRARY_NAME) -name '*.swift') $(shell find $(♏) -name '*.swift')
 
 # Theos makefiles to include
