@@ -26,7 +26,7 @@ let package: Package = .init(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/Paisseon/Jinx.git", branch: "development")
+        .package(url: "https://github.com/Paisseon/Jinx.git", branch: "master")
     ],
     targets: [
         .target(
