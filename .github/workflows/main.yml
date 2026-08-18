@@ -37,19 +37,16 @@ jobs:
         run: |
           brew install ldid make gh
 
-      - name: Fetch and Integrate Jinx Source Files Directly
+      - name: Fetch and Place Jinx Sources
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           TEMP_JINX="/tmp/JinxRepo"
           rm -rf "$TEMP_JINX"
-          
-          # Jinx reposunu emt branch'inden klonluyoruz
           gh repo clone Paisseon/Jinx "$TEMP_JINX" -- --branch emt --depth 1
           
-          # SatellaJailed projesinin Tweak/Sources içerisine Jinx modülü olarak taşıyoruz
           mkdir -p ./Tweak/Sources/Jinx
-          cp -R "$TEMP_JINX/Sources/Jinx/"* ./Tweak/Sources/Jinx/
+          cp -R "$TEMP_JINX/Sources/Jinx/." ./Tweak/Sources/Jinx/
 
       - name: Build Dylib (Jailed)
         working-directory: ./Tweak
