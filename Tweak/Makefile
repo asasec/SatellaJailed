@@ -3,23 +3,14 @@
 ARCHS = arm64
 TARGET = iphone:clang:latest:latest
 
-
-
 # Processes die if they are killed
 
 INSTALL_TARGET_PROCESSES = SpringBoard
 
-# Make Jinx work from SPM
-
-♎ = $(HOME)/Library/Developer/Xcode/DerivedData
-♍ = $(shell find $(♎) -maxdepth 1 -type d -name "Tweak-*" -exec ls -td {} + | head -n 1)
-♌ = /SourcePackages/checkouts/Jinx/Sources/Jinx
-♏ = $(♍)$(♌)
-
 # Define included files, imported frameworks, etc.
 
 LIBRARY_NAME = SatellaJailed
-$(LIBRARY_NAME)_FILES = Sources/load.s $(shell find Sources/$(LIBRARY_NAME) -name '*.swift') $(shell find $(♏) -name '*.swift')
+$(LIBRARY_NAME)_FILES = Sources/load.s $(shell find Sources/$(LIBRARY_NAME) -name '*.swift') $(shell find Sources/Jinx -name '*.swift')
 
 # Theos makefiles to include
 
