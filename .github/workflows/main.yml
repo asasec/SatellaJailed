@@ -38,6 +38,8 @@ jobs:
           brew install ldid make gh
 
       - name: Setup Jinx Dependency Correctly
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           DERIVED_DIR="$HOME/Library/Developer/Xcode/DerivedData"
           TARGET_JINX_DIR="$DERIVED_DIR/Tweak-CI/SourcePackages/checkouts/Jinx"
@@ -46,7 +48,6 @@ jobs:
           mkdir -p "$TARGET_JINX_DIR"
           rm -rf "$TEMP_JINX"
           
-          # GitHub CLI (gh) kullanarak HTTPS kimlik doğrulamasına takılmadan public klonlama yapıyoruz
           gh repo clone checkra1n/Jinx "$TEMP_JINX" -- --depth 1
           
           mkdir -p "$TARGET_JINX_DIR/Sources/Jinx"
