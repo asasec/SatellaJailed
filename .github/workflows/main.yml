@@ -31,7 +31,6 @@ jobs:
           else
             sudo git -C /opt/theos/sdks pull
           fi
-          # chown komutunun eksik/geçici kilit dosyaları yüzünden hata vermesini önlüyoruz
           sudo chown -R $USER:staff /opt/theos || true
 
       - name: Install Dependencies
@@ -47,9 +46,8 @@ jobs:
           mkdir -p "$TARGET_JINX_DIR"
           rm -rf "$TEMP_JINX"
           
-          curl -L https://github.com/checkra1n/Jinx/archive/refs/heads/main.zip -o /tmp/jinx.zip
-          unzip -q /tmp/jinx.zip -d /tmp/
-          mv /tmp/Jinx-main "$TEMP_JINX"
+          # Git credential helper'ı devre dışı bırakıp public klonlamayı zorunlu kılıyoruz
+          git -c credential.helper= clone --depth 1 https://github.com/checkra1n/Jinx.git "$TEMP_JINX"
           
           mkdir -p "$TARGET_JINX_DIR/Sources/Jinx"
           
