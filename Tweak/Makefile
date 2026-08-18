@@ -1,10 +1,8 @@
 # Theos optimisations
 
 ARCHS = arm64
+TARGET = iphone:clang:latest:latest
 
-ifeq ($(ROOTLESS),1)
-	TARGET = iphone:clang:latest:15.0
-endif
 
 
 # Processes die if they are killed
