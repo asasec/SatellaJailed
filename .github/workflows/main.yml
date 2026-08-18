@@ -45,12 +45,12 @@ jobs:
           rm -rf "$TEMP_DIR"
           mkdir -p "$TEMP_DIR"
           
-          # En son Jinx sürüm arşivini GitHub Releases üzerinden indirip kuruyoruz
           curl -L "$(gh release view -R Paisseon/Jinx --json zipballUrl --jq .zipballUrl)" -o "$TEMP_DIR/jinx.zip"
           unzip -q "$TEMP_DIR/jinx.zip" -d "$TEMP_DIR/"
           
-          # Çıkan klasörün içine girip kurulum scriptini çalıştırıyoruz
-          cd "$TEMP_DIR"/Paisseon-Jinx-*
+          # Dinamik olarak install_jinx.py dosyasını bulup çalıştırıyoruz
+          SCRIPT_DIR=$(dirname "$(find "$TEMP_DIR" -name "install_jinx.py" | head -n 1)")
+          cd "$SCRIPT_DIR"
           python3 install_jinx.py
 
       - name: Build Dylib (Jailed)
