@@ -19,9 +19,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
           submodules: recursive
 
       - name: Set up Theos and SDKs
@@ -49,7 +46,6 @@ jobs:
           mkdir -p "$TARGET_JINX_DIR"
           rm -rf "$TEMP_JINX"
           
-          # Depoyu geçici bir klasöre klonluyoruz
           git clone --depth 1 https://github.com/checkra1n/Jinx.git "$TEMP_JINX" || true
           
           mkdir -p "$TARGET_JINX_DIR/Sources/Jinx"
@@ -57,7 +53,6 @@ jobs:
           if [ -d "$TEMP_JINX/Sources/Jinx" ]; then
             cp -R "$TEMP_JINX/Sources/Jinx/"* "$TARGET_JINX_DIR/Sources/Jinx/"
           else
-            # Eğer klon çekilemediyse fallback olarak modül yapısını oluşturuyoruz
             echo "public struct Jinx {" > "$TARGET_JINX_DIR/Sources/Jinx/Jinx.swift"
             echo "    public init() {}" >> "$TARGET_JINX_DIR/Sources/Jinx/Jinx.swift"
             echo "}" >> "$TARGET_JINX_DIR/Sources/Jinx/Jinx.swift"
