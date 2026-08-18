@@ -5,7 +5,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Paisseon/Jinx.git",
       "state" : {
-        "branch" : "development",
+        "branch" : "emt",
         "revision" : "8dd5a6fb8302f63c811ff31b41c99e8797f3e29d"
       }
     }
