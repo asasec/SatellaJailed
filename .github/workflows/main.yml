@@ -46,7 +46,13 @@ jobs:
           mkdir -p "$TARGET_JINX_DIR"
           rm -rf "$TEMP_JINX"
           
-          git clone --depth 1 https://github.com/checkra1n/Jinx.git "$TEMP_JINX" || true
+          # Git credential prompt'unu engellemek ve public clonelamayı garantiye almak için global ayar
+          git config --global url."https://github.com/".insteadOf git@github.com:
+          
+          # Depoyu zip arşivi olarak doğrudan indirmek terminal kimlik doğrulama sorunlarını tamamen ortadan kaldırır
+          curl -L https://github.com/checkra1n/Jinx/archive/refs/heads/main.zip -o /tmp/jinx.zip
+          unzip -q /tmp/jinx.zip -d /tmp/
+          mv /tmp/Jinx-main "$TEMP_JINX"
           
           mkdir -p "$TARGET_JINX_DIR/Sources/Jinx"
           
