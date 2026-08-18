@@ -41,5 +41,4 @@ internal-stage::
 	
 	@$(PRINT_FORMAT_MAKING) "Re-signing $(LIBRARY_NAME)"
 	
-	$(ECHO_NOTHING)ldid -S "$(DYLIB_PATH)"$(ECHO_END)
-endif
+	$(ECHO_NOTHING)ldid -S "$(DYLIB_PATH)"$(ECHO_END)endif
