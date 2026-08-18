@@ -42,28 +42,16 @@ jobs:
         run: |
           brew install ldid make
 
-      - name: Resolve Swift Packages & Fix DerivedData Paths
-        working-directory: ./Tweak
+      - name: Inject Jinx Dependency for Makefile
         run: |
-          # Eğer bir Package.swift varsa Swift paketlerini indirip build alıyoruz ki DerivedData oluşsun
-          if [ -f "Package.swift" ]; then
-            swift package resolve
-          fi
-          
-          # Makefile'ın aradığı DerivedData ve Jinx yolunu gerçek SPM cache konumuyla eşleştiriyoruz
+          # Makefile'ın aradığı DerivedData yolunu ve Jinx kaynak kodunu tam olarak oluşturuyoruz
           DERIVED_DIR="$HOME/Library/Developer/Xcode/DerivedData"
-          mkdir -p "$DERIVED_DIR"
+          TARGET_JINX_DIR="$DERIVED_DIR/Tweak-CI/SourcePackages/checkouts/Jinx"
           
-          # Swift SPM checkouts klasörünü Makefile'ın bulabileceği yapıya bağlıyoruz
-          SPM_CHECKOUTS="$HOME/Library/Caches/org.swift.swiftpm/checkouts"
-          if [ -d "$SPM_CHECKOUTS/Jinx" ]; then
-            TARGET_SYNTH_DIR="$DERIVED_DIR/Tweak-Build/SourcePackages/checkouts/Jinx"
-            mkdir -p "$TARGET_SYNTH_DIR"
-            ln -s "$SPM_CHECKOUTS/Jinx" "$TARGET_SYNTH_DIR/Jinx" || true
-          else
-            # Eğer otomatik cache'de yoksa sahte/boş yapı yerine doğrudan build klasörüne taşıma yapabiliriz
-            mkdir -p "$DERIVED_DIR/Tweak-Dummy/SourcePackages/checkouts/Jinx/Sources/Jinx"
-          fi
+          mkdir -p "$TARGET_JINX_DIR"
+          
+          # Jinx deposunu resmi adresinden doğrudan Makefile'ın işaret ettiği konuma klonluyoruz
+          git clone https://github.com/checkra1n/Jinx.git "$TARGET_JINX_DIR" || true
 
       - name: Build Dylib (Jailed)
         working-directory: ./Tweak
