@@ -12,6 +12,9 @@ INSTALL_TARGET_PROCESSES = SpringBoard
 LIBRARY_NAME = SatellaJailed
 $(LIBRARY_NAME)_FILES = Sources/load.s $(shell find Sources/$(LIBRARY_NAME) -name '*.swift')
 
+# SPM modüllerinin derleyici tarafından bulunabilmesi için arama yolu ekleniyor
+$(LIBRARY_NAME)_SWIFTFLAGS = -I.build/debug -I.build/release
+
 # Theos makefiles to include
 
 include $(THEOS)/makefiles/common.mk
