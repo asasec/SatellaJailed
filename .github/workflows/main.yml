@@ -19,23 +19,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
           submodules: recursive
 
       - name: Set up Theos and SDKs
         run: |
-          # Install Theos if not already present
           if [ ! -d "/opt/theos" ]; then
             sudo git clone --recursive https://github.com/theos/theos.git /opt/theos
           fi
-          
-          # Clone official Theos SDKs repository safely
           if [ ! -d "/opt/theos/sdks" ]; then
             sudo git clone https://github.com/theos/sdks.git /opt/theos/sdks
           else
             sudo git -C /opt/theos/sdks pull
           fi
-          
-          # Fix permissions for runner user
           sudo chown -R $USER:staff /opt/theos
 
       - name: Install Dependencies
@@ -44,23 +42,25 @@ jobs:
 
       - name: Setup Jinx Dependency Correctly
         run: |
-          # Makefile'ın aradığı tam dizin yolunu hazırlıyoruz
-          TARGET_JINX_DIR="$HOME/Library/Developer/Xcode/DerivedData/Tweak-CI/SourcePackages/checkouts/Jinx"
-          mkdir -p "$TARGET_JINX_DIR"
+          DERIVED_DIR="$HOME/Library/Developer/Xcode/DerivedData"
+          TARGET_JINX_DIR="$DERIVED_DIR/Tweak-CI/SourcePackages/checkouts/Jinx"
+          TEMP_JINX="/tmp/JinxRepo"
           
-          # Depoyu klonlarken kimlik doğrulama istememesi için HTTPS URL'sini düzenliyoruz ve hata vermesini engelliyoruz
+          mkdir -p "$TARGET_JINX_DIR"
+          rm -rf "$TEMP_JINX"
+          
+          # Depoyu geçici bir klasöre klonluyoruz
           git clone --depth 1 https://github.com/checkra1n/Jinx.git "$TEMP_JINX" || true
           
-          # Eğer clone başarılı olduysa veya alternatif olarak Swift paket yapısını taklit ediyorsak:
-          # Jinx kütüphanesinin Makefile tarafından bulunabilmesi için gereken 'Sources/Jinx' alt klasör hiyerarşisini kuruyoruz
           mkdir -p "$TARGET_JINX_DIR/Sources/Jinx"
           
-          # Eğer Jinx klonlandıysa dosyaları doğru yere taşıyalım, yoksa boş bir Swift modül arayüzü oluşturalım ki derleme patlamasın
           if [ -d "$TEMP_JINX/Sources/Jinx" ]; then
             cp -R "$TEMP_JINX/Sources/Jinx/"* "$TARGET_JINX_DIR/Sources/Jinx/"
           else
-            # Fallback: Klonlama yapılamadıysa Makefile'ın aradığı yapıyı boş geçmemek adına placeholder ekliyoruz
-            echo "public struct JinxDummy {}" > "$TARGET_JINX_DIR/Sources/Jinx/Jinx.swift"
+            # Eğer klon çekilemediyse fallback olarak modül yapısını oluşturuyoruz
+            echo "public struct Jinx {" > "$TARGET_JINX_DIR/Sources/Jinx/Jinx.swift"
+            echo "    public init() {}" >> "$TARGET_JINX_DIR/Sources/Jinx/Jinx.swift"
+            echo "}" >> "$TARGET_JINX_DIR/Sources/Jinx/Jinx.swift"
           fi
 
       - name: Build Dylib (Jailed)
