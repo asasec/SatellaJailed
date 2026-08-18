@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          brew install ldid make
+          brew install ldid make gh
 
       - name: Setup Jinx Dependency Correctly
         run: |
@@ -46,8 +46,8 @@ jobs:
           mkdir -p "$TARGET_JINX_DIR"
           rm -rf "$TEMP_JINX"
           
-          # Git credential helper'ı devre dışı bırakıp public klonlamayı zorunlu kılıyoruz
-          git -c credential.helper= clone --depth 1 https://github.com/checkra1n/Jinx.git "$TEMP_JINX"
+          # GitHub CLI (gh) kullanarak HTTPS kimlik doğrulamasına takılmadan public klonlama yapıyoruz
+          gh repo clone checkra1n/Jinx "$TEMP_JINX" -- --depth 1
           
           mkdir -p "$TARGET_JINX_DIR/Sources/Jinx"
           
