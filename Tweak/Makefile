@@ -12,6 +12,9 @@ INSTALL_TARGET_PROCESSES = SpringBoard
 LIBRARY_NAME = SatellaJailed
 $(LIBRARY_NAME)_FILES = Sources/load.s $(shell find Sources/$(LIBRARY_NAME) -name '*.swift') $(shell find Sources/Jinx -name '*.swift')
 
+# Swift modül yolunu Jinx klasörünü gösterecek şekilde ayarlayın
+$(LIBRARY_NAME)_SWIFTFLAGS = -I$(THEOS_PROJECT_DIR)/Sources/Jinx
+
 # Theos makefiles to include
 
 include $(THEOS)/makefiles/common.mk
