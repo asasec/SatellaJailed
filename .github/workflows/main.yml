@@ -42,10 +42,15 @@ jobs:
         run: |
           brew install ldid make
 
+      - name: Fix Missing SPM / DerivedData Paths for CI
+        run: |
+          # Makefile içindeki dinamik yolların hata vermemesi için sahte/boş dizin yapısı oluşturuyoruz
+          mkdir -p /Users/runner/Library/Developer/Xcode/DerivedData/Tweak-Dummy/SourcePackages/checkouts/Jinx/Sources/Jinx
+
       - name: Build Dylib (Jailed)
         working-directory: ./Tweak
         run: |
-          make
+          make FINALPACKAGE=1
 
       - name: Prepare Artifact
         run: |
