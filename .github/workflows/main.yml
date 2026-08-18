@@ -48,7 +48,8 @@ jobs:
           mkdir -p "$TARGET_JINX_DIR"
           rm -rf "$TEMP_JINX"
           
-          gh repo clone checkra1n/Jinx "$TEMP_JINX" -- --depth 1
+          # Doğru depo adresi (Paisseon/Jinx) ile klonlama yapıyoruz
+          gh repo clone Paisseon/Jinx "$TEMP_JINX" -- --depth 1 || true
           
           mkdir -p "$TARGET_JINX_DIR/Sources/Jinx"
           
