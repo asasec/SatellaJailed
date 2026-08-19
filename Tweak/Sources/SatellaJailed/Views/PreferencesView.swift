@@ -2,6 +2,7 @@ import SwiftUI
 
 @available(iOS 15, *)
 struct PreferencesView: View {
+    // Tüm özellikleri tek bir butonla kontrol etmek için AppStorage
     @AppStorage("tella_isEnabled") private var isEnabled: Bool = true
     @AppStorage("tella_isGesture") private var isGesture: Bool = true
     @AppStorage("tella_isHidden") private var isHidden: Bool = false
@@ -14,72 +15,117 @@ struct PreferencesView: View {
     @State private var isShowingOptions: Bool = false
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .center) {
+        VStack(spacing: 0) {
+            // 1. Başlık Çubuğu (Kırmızı Kısım - İstediğiniz gibi dikdörtgen)
+            HStack {
+                Text("SATELLA - MOD MENU")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
                 Button {
                     isShowing.toggle()
                 } label: {
-                    Image(systemName: "xmark.square.fill")
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding()
+                    Image(systemName: "xmark")
+                        .foregroundColor(.white)
+                        .font(.system(size: 14, weight: .bold))
                 }
-                
-                Color(red: 0.80, green: 0.63, blue: 0.87)
-                    .mask { SatellaShapeView() }
-                    .frame(width: 50, height: 50)
+            }
+            .padding()
+            .background(isEnabled ? Color.red : Color.gray) // Duruma göre renk değişimi
+            
+            // 2. İçerik Alanı (Mavi/Koyu Tonlar)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    
+                    // Ana Açma / Kapama Butonu (Tüm hook'ları tetikler)
+                    Button {
+                        isEnabled.toggle()
+                        // Toplu olarak diğer ayarları da ana duruma göre güncelleyebiliriz
+                        isGesture = isEnabled
+                        isObserver = isEnabled
+                        isPriceZero = isEnabled
+                        isReceipt = isEnabled
+                        isStealth = isEnabled
+                    } label: {
+                        HStack {
+                            Text(isEnabled ? "MOD MENU: ACTIVE" : "MOD MENU: DISABLED")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.white)
+                            Spacer()
+                            Circle()
+                                .fill(isEnabled ? Color.green : Color.red)
+                                .frame(width: 20, height: 20)
+                        }
+                        .padding()
+                        .background(Color.blue)
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Divider().background(Color.white)
+                    
+                    // Detaylı Toggle Satırları
+                    Group {
+                        ToggleRow(title: "3-Finger Gesture", isOn: $isGesture)
+                        ToggleRow(title: "Observer Hook", isOn: $isObserver)
+                        ToggleRow(title: "0,00 Price Hook", isOn: $isPriceZero)
+                        ToggleRow(title: "Receipt Bypass", isOn: $isReceipt)
+                        ToggleRow(title: "Stealth Mode", isOn: $isStealth)
+                    }
+                    
+                    // Uygula / Seçenekler Butonu
+                    Button("Apply Changes / Options") {
+                        isShowingOptions.toggle()
+                    }
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
                     .padding()
-                    .padding(.bottom)
+                    .background(Color.darkGrayCustom)
                     .alert("Select an action", isPresented: $isShowingOptions) {
-                        Button("Apply Changes (Close App)") {
+                        Button("Apply & Restart App") {
                             abort()
                         }
-                        
-                        Button("Hide Satella") {
+                        Button("Hide Menu") {
                             isShowing.toggle()
                             SatellaController.shared.host.removeFromSuperview()
                         }
-                        
-                        Button("View Source Code / FAQ") {
-                            UIApplication.shared.open(
-                                URL(string: "https://github.com/Paisseon/SatellaJailed")!,
-                                options: [:],
-                                completionHandler: nil
-                            )
-                        }
-                        
-                        Button("Cancel") {
-                            isShowingOptions.toggle()
-                        }
+                        Button("Cancel", role: .cancel) {}
                     }
-                
-                VStack {
-                    Toggle("Enabled", isOn: $isEnabled)
-                    Toggle("3-Finger Gesture", isOn: $isGesture)
-                    Toggle("Hide Permanently", isOn: $isHidden)
-                    Toggle("Observer", isOn: $isObserver)
-                    Toggle("0,00 Price", isOn: $isPriceZero)
-                    Toggle("Receipt", isOn: $isReceipt)
-                    Toggle("Stealth", isOn: $isStealth)
                 }
-                .padding()
-                .padding(.horizontal, 10)
-                
-                Button("Apply") {
-                    isShowingOptions.toggle()
-                }
-                    .foregroundColor(.white)
-                    .padding()
-                    .padding([.leading, .trailing])
-                    .background(
-                        RoundedRectangle(
-                            cornerRadius: 13,
-                            style: .continuous
-                        )
-                        .fill(Color(red: 0.80, green: 0.63, blue: 0.87))
-                    )
-                    .padding(.top)
             }
-            .tint(Color(red: 0.80, green: 0.63, blue: 0.87))
+            .background(Color(red: 0.1, green: 0.1, blue: 0.12))
         }
+        // Dikdörtgen görünüm için köşe yuvarlatmasını kaldırıyoruz (veya çok az tutuyoruz)
+        .cornerRadius(0) 
+        .frame(width: 280)
+        .shadow(radius: 10)
     }
+}
+
+// Yardımcı Satır Bileşeni
+@available(iOS 15, *)
+struct ToggleRow: View {
+    let title: String
+    @Binding var isOn: Bool
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.white)
+            Spacer()
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+        .background(Color.blue.opacity(0.7))
+        .overlay(Rectangle().frame(height: 1).foregroundColor(.white.opacity(0.2)), alignment: .bottom)
+    }
+}
+
+extension Color {
+    static let darkGrayCustom = Color(red: 0.2, green: 0.2, blue: 0.22)
 }
