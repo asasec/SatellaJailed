@@ -16,7 +16,7 @@ struct PreferencesView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // 1. Başlık Çubuğu (Kırmızı Kısım - İstediğiniz gibi dikdörtgen)
+            // 1. Başlık Çubuğu (Kırmızı Kısım - Dikdörtgen)
             HStack {
                 Text("SATELLA - MOD MENU")
                     .font(.system(size: 16, weight: .bold))
@@ -33,16 +33,15 @@ struct PreferencesView: View {
                 }
             }
             .padding()
-            .background(isEnabled ? Color.red : Color.gray) // Duruma göre renk değişimi
+            .background(isEnabled ? Color.red : Color.gray)
             
-            // 2. İçerik Alanı (Mavi/Koyu Tonlar)
+            // 2. İçerik Alanı
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     
-                    // Ana Açma / Kapama Butonu (Tüm hook'ları tetikler)
+                    // Ana Açma / Kapama Butonu (Bütün hook'ları toplu tetikler)
                     Button {
                         isEnabled.toggle()
-                        // Toplu olarak diğer ayarları da ana duruma göre güncelleyebiliriz
                         isGesture = isEnabled
                         isObserver = isEnabled
                         isPriceZero = isEnabled
@@ -97,7 +96,7 @@ struct PreferencesView: View {
             }
             .background(Color(red: 0.1, green: 0.1, blue: 0.12))
         }
-        // Dikdörtgen görünüm için köşe yuvarlatmasını kaldırıyoruz (veya çok az tutuyoruz)
+        // Keskin dikdörtgen görünüm için köşe yuvarlatması sıfırlandı
         .cornerRadius(0) 
         .frame(width: 280)
         .shadow(radius: 10)
@@ -126,6 +125,7 @@ struct ToggleRow: View {
     }
 }
 
+@available(iOS 13.0, *)
 extension Color {
     static let darkGrayCustom = Color(red: 0.2, green: 0.2, blue: 0.22)
 }
