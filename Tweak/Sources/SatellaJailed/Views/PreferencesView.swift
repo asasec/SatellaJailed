@@ -161,6 +161,7 @@ struct CustomToggleRow: View {
     }
 }
 
+@available(iOS 13.0, *)
 extension Color {
     static let customDarkGray = Color(red: 0.2, green: 0.2, blue: 0.22)
 }
