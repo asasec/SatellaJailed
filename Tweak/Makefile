@@ -12,7 +12,9 @@ SatellaJailed_FILES = $(wildcard Sources/SatellaJailed/*.swift) \
 
 SDK_PATH = $(shell xcrun --sdk iphoneos --show-sdk-path)
 SPM_MODULE_DIR = $(shell find .build -name "Jinx.swiftmodule" 2>/dev/null | head -n 1 | xargs dirname)
-JINX_LIB = $(shell find .build -name "libJinx.a" -o -name "Jinx.o" 2>/dev/null | head -n 1)
+
+# Jinx.build altında derlenen tüm nesne dosyalarını (.o) tek seferde topluyoruz
+JINX_OBJECTS = $(shell find .build -path "*/Jinx.build/*.o" 2>/dev/null)
 
 SatellaJailed_SWIFTFLAGS = \
 	-swift-version 5 \
@@ -22,8 +24,8 @@ SatellaJailed_SWIFTFLAGS = \
 
 SatellaJailed_CFLAGS = -fobjc-arc
 
-# Jinx kütüphanesini bağlayıcıya (linker) bildiriyoruz
-SatellaJailed_LDFLAGS = $(JINX_LIB)
+# Jinx nesne dosyalarını doğrudan bağlayıcıya (linker) aktarıyoruz
+SatellaJailed_LDFLAGS = $(JINX_OBJECTS)
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
@@ -63,12 +65,7 @@ before-all::
 		--sdk "$(SDK_PATH)" \
 		--triple arm64-apple-ios14.0
 
-	@echo "========================================"
-	@echo "Checking .build directory contents:"
-	@echo "========================================"
-	@ls -R .build || echo ".build directory not found or empty!"
-	@echo "JINX_LIB found at: $(JINX_LIB)"
-	@echo ""
+	@echo "JINX_OBJECTS count: $(words $(JINX_OBJECTS))"
 
 after-install::
 	install.exec "killall -9 SpringBoard"
