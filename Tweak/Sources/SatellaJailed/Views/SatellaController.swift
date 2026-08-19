@@ -6,6 +6,9 @@ final class SatellaController: UIViewController {
     
     var menuView: ImGuiStyleMenuView!
     
+    // WindowHook entegrasyonu için pencere dizisi
+    var windows: [UIWindow] = []
+    
     override func loadView() {
         // PassthroughView yerine doğrudan bu tam ekran şeffaf menü yöneticisini kullanıyoruz
         view = PassthroughView()
