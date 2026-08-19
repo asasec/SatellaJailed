@@ -1,4 +1,4 @@
-name: Build Swift Tweak
+Name: Build Swift Tweak
 
 on:
   push:
@@ -128,5 +128,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: JinxSwiftTweak-deb
-          path: packages/*.deb
+          path: Tweak/packages/*.deb
           if-no-files-found: error
