@@ -2,7 +2,6 @@ import SwiftUI
 
 @available(iOS 15, *)
 struct PreferencesView: View {
-    // Tüm özellikleri tek bir butonla kontrol etmek için AppStorage
     @AppStorage("tella_isEnabled") private var isEnabled: Bool = true
     @AppStorage("tella_isGesture") private var isGesture: Bool = true
     @AppStorage("tella_isHidden") private var isHidden: Bool = false
@@ -14,19 +13,16 @@ struct PreferencesView: View {
     @Binding var isShowing: Bool
     @State private var isShowingOptions: Bool = false
     
-    // Sürükleme (Drag) için konum state'leri
-    @State private var offset = CGSize.zero
-    @State private var lastOffset = CGSize.zero
+    // Titreşimi engelleyen GestureState tabanlı sürükleme konumları
+    @State private var currentPosition = CGSize.zero
+    @GestureState private var dragOffset = CGSize.zero
 
     var body: some View {
-        // En dıştaki katman tamamen transparan ve dokunulmaz (arkaya tıklanabilir) olmalı, 
-        // ancak sadece menünün olduğu alan dokunmayı yakalamalı.
         ZStack {
+            // Menü dışındaki boşluklar tamamen şeffaf ve arkaya tıklanabilir
             Color.clear
                 .ignoresSafeArea()
-                .contentShape(Rectangle())
-                // Boşluklara tıklandığında arkaya geçmesi için interaction'ı serbest bırakıyoruz
-                .allowsHitTesting(false) 
+                .allowsHitTesting(false)
 
             VStack(spacing: 0) {
                 // 1. Başlık Çubuğu (Sürüklenebilir Alan)
@@ -48,25 +44,21 @@ struct PreferencesView: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .background(isEnabled ? Color.red : Color.gray)
-                // Başlık çubuğundan tutup sürüklemek için gesture ekliyoruz
+                .contentShape(Rectangle())
                 .gesture(
                     DragGesture()
-                        .onChanged { value in
-                            offset = CGSize(
-                                width: lastOffset.width + value.translation.width,
-                                height: lastOffset.height + value.translation.height
-                            )
+                        .updating($dragOffset) { value, state, _ in
+                            state = value.translation
                         }
-                        .onEnded { _ in
-                            lastOffset = offset
+                        .onEnded { value in
+                            currentPosition.width += value.translation.width
+                            currentPosition.height += value.translation.height
                         }
                 )
                 
                 // 2. İçerik Alanı
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
-                        
-                        // Ana Açma / Kapama Butonu
                         Button {
                             isEnabled.toggle()
                             isGesture = isEnabled
@@ -92,7 +84,6 @@ struct PreferencesView: View {
                         
                         Divider().background(Color.white)
                         
-                        // Detaylı Toggle Satırları
                         Group {
                             ToggleRow(title: "3-Finger Gesture", isOn: $isGesture)
                             ToggleRow(title: "Observer Hook", isOn: $isObserver)
@@ -101,7 +92,6 @@ struct PreferencesView: View {
                             ToggleRow(title: "Stealth Mode", isOn: $isStealth)
                         }
                         
-                        // Uygula / Seçenekler Butonu
                         Button("Apply Changes / Options") {
                             isShowingOptions.toggle()
                         }
@@ -116,24 +106,25 @@ struct PreferencesView: View {
                             }
                             Button("Hide Menu") {
                                 isShowing.toggle()
-                                SatellaController.shared.host.removeFromSuperview()
                             }
                             Button("Cancel", role: .cancel) {}
                         }
                     }
                 }
-                .background(Color(red: 0.1, green: 0.1, blue: 0.12).opacity(0.85)) // Hafif şeffaf koyu arkaplan
+                .background(Color(red: 0.1, green: 0.1, blue: 0.12).opacity(0.85)) // Şeffaf koyu tema
             }
             .frame(width: 260)
             .cornerRadius(0)
             .shadow(radius: 5)
-            .offset(offset) // Sürükleme pozisyonunu uyguluyoruz
-            .allowsHitTesting(true) // Menünün kendi içindeki butonlar tıklanabilir kalır
+            .offset(
+                width: currentPosition.width + dragOffset.width,
+                height: currentPosition.height + dragOffset.height
+            )
+            .allowsHitTesting(true) // Menünün içi tıklanabilir kalır
         }
     }
 }
 
-// Yardımcı Satır Bileşeni
 @available(iOS 15, *)
 struct ToggleRow: View {
     let title: String
