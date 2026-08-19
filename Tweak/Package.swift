@@ -32,6 +32,15 @@ let package: Package = .init(
         .target(
             name: "SatellaJailed",
             dependencies: [.product(name: "Jinx", package: "Jinx")],
+            path: "Sources/SatellaJailed",
+            sources: [
+                "Tweak.swift",
+                "Extensions",
+                "Helpers",
+                "Hooks",
+                "Receipt",
+                "Views"
+            ],
             swiftSettings: [.unsafeFlags(swiftFlags)]
         )
     ]
