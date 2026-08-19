@@ -69,7 +69,3 @@ before-all::
 
 after-install::
 	install.exec "killall -9 SpringBoard"
-
-SUBPROJECTS += prefs
-
-include $(THEOS_MAKE_PATH)/aggregate.mk
