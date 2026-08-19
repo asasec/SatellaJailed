@@ -5,7 +5,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = SatellaJailed
 
-SatellaJailed_FILES = Sources/Tweak.swift load.s
+SatellaJailed_FILES = Sources/SatellaJailed/Tweak.swift Sources/load.s
 
 SPM_MODULE_DIR = $(shell find .build -name "Jinx.swiftmodule" 2>/dev/null | head -n 1 | xargs dirname)
 
