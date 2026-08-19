@@ -3,21 +3,21 @@ ARCHS = arm64
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = JinxSwiftTweak
+TWEAK_NAME = SatellaJailed
 
-JinxSwiftTweak_FILES = Sources/Tweak.swift load.s
+SatellaJailed_FILES = Sources/Tweak.swift load.s
 
 SPM_MODULE_DIR = $(shell find .build -name "Jinx.swiftmodule" 2>/dev/null | head -n 1 | xargs dirname)
 
 SDK_PATH = $(shell xcrun --sdk iphoneos --show-sdk-path)
 
-JinxSwiftTweak_SWIFTFLAGS = \
+SatellaJailed_SWIFTFLAGS = \
 	-swift-version 5 \
 	-I$(SPM_MODULE_DIR) \
 	-sdk $(SDK_PATH) \
 	-target arm64-apple-ios14.0
 
-JinxSwiftTweak_CFLAGS = -fobjc-arc
+SatellaJailed_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
