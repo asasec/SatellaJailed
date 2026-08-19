@@ -21,11 +21,13 @@ public class ImGuiStyleMenuView: UIView {
     override public init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        loadPreferences() // Başlangıçta kayıtlı tercihleri yükle
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupUI()
+        loadPreferences()
     }
 
     private func setupUI() {
@@ -50,7 +52,7 @@ public class ImGuiStyleMenuView: UIView {
 
         // --- Başlık Çubuğu ---
         titleBar = UIView(frame: CGRect(x: 0, y: 0, width: 280, height: 40))
-        titleBar.backgroundColor = UIColor(red: 0.85, green: 0.20, blue: 0.20, alpha: 1.0) // Başlangıçta Kırmızı
+        titleBar.backgroundColor = UIColor(red: 0.85, green: 0.20, blue: 0.20, alpha: 1.0)
         
         let path = UIBezierPath(roundedRect: titleBar.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: 16.0, height: 16.0))
         let maskLayer = CAShapeLayer()
@@ -82,7 +84,7 @@ public class ImGuiStyleMenuView: UIView {
 
         masterSwitch = UISwitch(frame: CGRect(x: 210, y: 52, width: 0, height: 0))
         masterSwitch.isOn = false
-        masterSwitch.onTintColor = UIColor(red: 0.20, green: 0.80, blue: 0.20, alpha: 1.0) // Yeşil
+        masterSwitch.onTintColor = UIColor(red: 0.20, green: 0.80, blue: 0.20, alpha: 1.0)
         masterSwitch.addTarget(self, action: #selector(masterSwitchChanged(_:)), for: .valueChanged)
         menuWindow.addSubview(masterSwitch)
 
@@ -90,11 +92,11 @@ public class ImGuiStyleMenuView: UIView {
         let startY: CGFloat = 95
         let spacing: CGFloat = 40
         
-        gestureSwitch = createRow(title: "3-Finger Gesture", y: startY)
-        observerSwitch = createRow(title: "Observer Hook", y: startY + spacing)
-        priceZeroSwitch = createRow(title: "0,00 Price Hook", y: startY + (spacing * 2))
-        receiptSwitch = createRow(title: "Receipt Bypass", y: startY + (spacing * 3))
-        stealthSwitch = createRow(title: "Stealth Mode", y: startY + (spacing * 4))
+        gestureSwitch = createRow(title: "3-Finger Gesture", y: startY, action: #selector(gestureChanged(_:)))
+        observerSwitch = createRow(title: "Observer Hook", y: startY + spacing, action: #selector(observerChanged(_:)))
+        priceZeroSwitch = createRow(title: "0,00 Price Hook", y: startY + (spacing * 2), action: #selector(priceZeroChanged(_:)))
+        receiptSwitch = createRow(title: "Receipt Bypass", y: startY + (spacing * 3), action: #selector(receiptChanged(_:)))
+        stealthSwitch = createRow(title: "Stealth Mode", y: startY + (spacing * 4), action: #selector(stealthChanged(_:)))
 
         // --- Yüzen Ayı Simgesi ---
         floatingIcon = UIButton(type: .system)
@@ -117,7 +119,7 @@ public class ImGuiStyleMenuView: UIView {
         floatingIcon.addGestureRecognizer(iconPan)
     }
 
-    private func createRow(title: String, y: CGFloat) -> UISwitch {
+    private func createRow(title: String, y: CGFloat, action: Selector) -> UISwitch {
         let label = UILabel(frame: CGRect(x: 16, y: y, width: 180, height: 24))
         label.text = title
         label.textColor = UIColor(white: 0.90, alpha: 1.0)
@@ -127,14 +129,24 @@ public class ImGuiStyleMenuView: UIView {
         let sw = UISwitch(frame: CGRect(x: 210, y: y - 2, width: 0, height: 0))
         sw.isOn = false
         sw.onTintColor = UIColor(red: 0.20, green: 0.60, blue: 1.00, alpha: 1.0)
+        sw.addTarget(self, action: action, for: .valueChanged)
         menuWindow.addSubview(sw)
         return sw
+    }
+
+    private func loadPreferences() {
+        // Preferences sınıfındaki güncel değerleri arayüze yansıt
+        gestureSwitch.isOn = Preferences.isGesture
+        observerSwitch.isOn = Preferences.isObserver
+        priceZeroSwitch.isOn = Preferences.isPriceZero
+        receiptSwitch.isOn = Preferences.isReceipt
+        stealthSwitch.isOn = Preferences.isStealth
     }
 
     override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, with: event)
         if hitView == self {
-            return nil // Boşluklar oyun/uygulama ekranına tıklama geçirir
+            return nil 
         }
         return hitView
     }
@@ -170,17 +182,40 @@ public class ImGuiStyleMenuView: UIView {
     @objc private func masterSwitchChanged(_ sender: UISwitch) {
         let isOn = sender.isOn
         
-        // Başlık çubuğu rengi (Açıksa Yeşil, Kapalıysa Kırmızı)
         titleBar.backgroundColor = isOn ? UIColor(red: 0.15, green: 0.75, blue: 0.15, alpha: 1.0) : UIColor(red: 0.85, green: 0.20, blue: 0.20, alpha: 1.0)
         
-        // Alt anahtarları güncelle
         gestureSwitch.setOn(isOn, animated: true)
         observerSwitch.setOn(isOn, animated: true)
         priceZeroSwitch.setOn(isOn, animated: true)
         receiptSwitch.setOn(isOn, animated: true)
         stealthSwitch.setOn(isOn, animated: true)
         
-        // FreeIAP fonksiyonunu tetikle
+        Preferences.isGesture = isOn
+        Preferences.isObserver = isOn
+        Preferences.isPriceZero = isOn
+        Preferences.isReceipt = isOn
+        Preferences.isStealth = isOn
+        
         FreeIAP(isOn)
+    }
+
+    @objc private func gestureChanged(_ sender: UISwitch) {
+        Preferences.isGesture = sender.isOn
+    }
+
+    @objc private func observerChanged(_ sender: UISwitch) {
+        Preferences.isObserver = sender.isOn
+    }
+
+    @objc private func priceZeroChanged(_ sender: UISwitch) {
+        Preferences.isPriceZero = sender.isOn
+    }
+
+    @objc private func receiptChanged(_ sender: UISwitch) {
+        Preferences.isReceipt = sender.isOn
+    }
+
+    @objc private func stealthChanged(_ sender: UISwitch) {
+        Preferences.isStealth = sender.isOn
     }
 }
