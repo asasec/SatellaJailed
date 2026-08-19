@@ -12,7 +12,7 @@ SatellaJailed_FILES = $(wildcard Sources/SatellaJailed/*.swift) \
 
 SDK_PATH = $(shell xcrun --sdk iphoneos --show-sdk-path)
 SPM_MODULE_DIR = $(shell find .build -name "Jinx.swiftmodule" 2>/dev/null | head -n 1 | xargs dirname)
-JINX_LIB = $(shell find .build -name "libJinx.a" 2>/dev/null | head -n 1)
+JINX_LIB = $(shell find .build -name "libJinx.a" -o -name "Jinx.o" 2>/dev/null | head -n 1)
 
 SatellaJailed_SWIFTFLAGS = \
 	-swift-version 5 \
@@ -62,6 +62,13 @@ before-all::
 	swift build \
 		--sdk "$(SDK_PATH)" \
 		--triple arm64-apple-ios14.0
+
+	@echo "========================================"
+	@echo "Checking .build directory contents:"
+	@echo "========================================"
+	@ls -R .build || echo ".build directory not found or empty!"
+	@echo "JINX_LIB found at: $(JINX_LIB)"
+	@echo ""
 
 after-install::
 	install.exec "killall -9 SpringBoard"
