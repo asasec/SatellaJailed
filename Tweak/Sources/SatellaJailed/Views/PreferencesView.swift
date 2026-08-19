@@ -13,7 +13,7 @@ struct PreferencesView: View {
     @Binding var isShowing: Bool
     @State private var isShowingOptions: Bool = false
     
-    // Titreşimi engelleyen GestureState tabanlı sürükleme konumları
+    // Titreşimi engelleyen GestureState tabanlı sürüklenme konumları
     @State private var currentPosition = CGSize.zero
     @GestureState private var dragOffset = CGSize.zero
 
@@ -116,10 +116,11 @@ struct PreferencesView: View {
             .frame(width: 260)
             .cornerRadius(0)
             .shadow(radius: 5)
-            .offset(
+            // Doğru CGSize birleşimiyle offset hatası giderildi
+            .offset(CGSize(
                 width: currentPosition.width + dragOffset.width,
                 height: currentPosition.height + dragOffset.height
-            )
+            ))
             .allowsHitTesting(true) // Menünün içi tıklanabilir kalır
         }
     }
