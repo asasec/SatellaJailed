@@ -1,38 +1,23 @@
-// swift-tools-version:5.8
-
-import Darwin.POSIX
+// swift-tools-version: 5.4
 import PackageDescription
 
-let theosPath: String = .init(cString: getenv("HOME")) + "/theos"
-let minFirmware: String = "12.2"
-
-let swiftFlags: [String] = [
-    "-F\(theosPath)/vendor/lib",
-    "-F\(theosPath)/lib",
-    "-I\(theosPath)/vendor/include",
-    "-I\(theosPath)/include",
-    "-target", "arm64-apple-ios\(minFirmware)",
-    "-sdk", "\(theosPath)/sdks/iPhoneOS16.0.sdk",
-    "-resource-dir", "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift"
-]
-
-let package: Package = .init(
-    name: "SatellaJailed",
-    platforms: [.iOS(minFirmware)],
+let package = Package(
+    name: "JinxSwiftTweak",
+    platforms: [.iOS(.v12)],
     products: [
         .library(
-            name: "SatellaJailed",
-            targets: ["SatellaJailed"]
-        ),
+            name: "JinxSwiftTweak",
+            targets: ["JinxSwiftTweak"]
+        )
     ],
     dependencies: [
-        .package(url: "https://github.com/Paisseon/Jinx.git", branch: "emt")
+        .package(url: "https://github.com/Paisseon/Jinx.git", from: "1.3.0")
     ],
     targets: [
         .target(
-            name: "SatellaJailed",
-            dependencies: [.product(name: "Jinx", package: "Jinx")],
-            swiftSettings: [.unsafeFlags(swiftFlags)]
+            name: "JinxSwiftTweak",
+            dependencies: ["Jinx"],
+            path: "Sources"
         )
     ]
 )
