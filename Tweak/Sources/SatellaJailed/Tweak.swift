@@ -3,6 +3,7 @@ import UIKit
 
 struct Tweak {
     static func ctor() {
+        // Temel hook'lar bir kez çalıştırılır
         CanPayHook().hook()
         DelegateHook().hook()
         TransactionHook().hook()
@@ -25,9 +26,33 @@ struct Tweak {
                 return
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                let rootVC: UIViewController? = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController
-                rootVC?.add(SatellaController.shared)
+            // İlk açılışta menüyü ekle
+            showMenu()
+            
+            // Oyundan çık-gir yapıldığında veya sahneler arası geçişte kaybolmayı önlemek için
+            // Uygulama her ön plana geldiğinde (aktif olduğunda) menüyü kontrol edip tekrar ekliyoruz.
+            NotificationCenter.default.addObserver(
+                forName: UIApplication.didBecomeActiveNotification,
+                object: nil,
+                queue: .main
+            ) { _ in
+                showMenu()
+            }
+        }
+    }
+    
+    private static func showMenu() {
+        DispatchQueue.main.async {
+            // Güvenli pencere ve rootViewController bulma
+            guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) ?? UIApplication.shared.windows.first,
+                  let rootVC = window.rootViewController else {
+                return
+            }
+            
+            // Eğer menü hali hazırda ekli değilse tekrar ekle (üst üste binmeyi önler)
+            let controller = SatellaController.shared
+            if controller.parent == nil {
+                rootVC.add(controller)
             }
         }
     }
