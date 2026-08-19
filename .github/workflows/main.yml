@@ -1,4 +1,4 @@
-Name: Build Swift Tweak
+name: Build Swift Tweak
 
 on:
   push:
