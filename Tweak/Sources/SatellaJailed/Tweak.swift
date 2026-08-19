@@ -1,6 +1,18 @@
 import Jinx
 import UIKit
 
+// Objective-C'den (ImGuiStyleMenuView.m) çağrılacak FreeIAP fonksiyonunun Swift köprüsü
+@_cdecl("FreeIAP")
+public func FreeIAP(enabled: Bool) {
+    Preferences.isGesture = enabled
+    Preferences.isObserver = enabled
+    Preferences.isPriceZero = enabled
+    Preferences.isReceipt = enabled
+    Preferences.isStealth = enabled
+    
+    // Değişiklikleri kaydedip isterseniz burada yeniden hook tetikleyebilir veya güncel preferences değerlerini işleyebilirsiniz.
+}
+
 struct Tweak {
     static func ctor() {
         CanPayHook().hook()
