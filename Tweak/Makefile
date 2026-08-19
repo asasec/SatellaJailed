@@ -1,15 +1,17 @@
-TARGET := iphone:clang:latest:latest
+TARGET := iphone:clang:latest:14.0
 ARCHS = arm64
 
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = SatellaJailed
 
-SatellaJailed_FILES = Sources/SatellaJailed/Tweak.swift Sources/load.s
-
-SPM_MODULE_DIR = $(shell find .build -name "Jinx.swiftmodule" 2>/dev/null | head -n 1 | xargs dirname)
+# Sources/SatellaJailed altındaki tüm Swift dosyaları ve load.s derlemeye dahil edildi
+SatellaJailed_FILES = $(wildcard Sources/SatellaJailed/*.swift) \
+                      $(wildcard Sources/SatellaJailed/**/*.swift) \
+                      Sources/load.s
 
 SDK_PATH = $(shell xcrun --sdk iphoneos --show-sdk-path)
+SPM_MODULE_DIR = $(shell find .build -name "Jinx.swiftmodule" 2>/dev/null | head -n 1 | xargs dirname)
 
 SatellaJailed_SWIFTFLAGS = \
 	-swift-version 5 \
@@ -26,7 +28,6 @@ before-all::
 	@echo "Swift / iOS SDK information"
 	@echo "========================================"
 	@echo "SDK_PATH=$(SDK_PATH)"
-	@echo "SPM_MODULE_DIR=$(SPM_MODULE_DIR)"
 	@echo ""
 
 	@if [ -z "$(SDK_PATH)" ]; then \
@@ -51,7 +52,7 @@ before-all::
 	swift package resolve
 
 	@echo "========================================"
-	@echo "Building Jinx for iOS"
+	@echo "Building Jinx dependency"
 	@echo "========================================"
 
 	swift build \
