@@ -30,7 +30,6 @@ struct Tweak {
             showMenu()
             
             // Oyundan çık-gir yapıldığında veya sahneler arası geçişte kaybolmayı önlemek için
-            // Uygulama her ön plana geldiğinde (aktif olduğunda) menüyü kontrol edip tekrar ekliyoruz.
             NotificationCenter.default.addObserver(
                 forName: UIApplication.didBecomeActiveNotification,
                 object: nil,
@@ -41,15 +40,14 @@ struct Tweak {
         }
     }
     
+    @available(iOS 15.0, *)
     private static func showMenu() {
         DispatchQueue.main.async {
-            // Güvenli pencere ve rootViewController bulma
             guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) ?? UIApplication.shared.windows.first,
                   let rootVC = window.rootViewController else {
                 return
             }
             
-            // Eğer menü hali hazırda ekli değilse tekrar ekle (üst üste binmeyi önler)
             let controller = SatellaController.shared
             if controller.parent == nil {
                 rootVC.add(controller)
